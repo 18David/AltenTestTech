@@ -1,0 +1,124 @@
+<div class="app-frame">
+    <div class="p-2">
+        <div class="p-card border-round p-4">
+            <div class="flex flex-row justify-content-between	">
+                <div class="flex flex-row gap-4">
+                    <p-button pRipple label="New" icon="pi pi-plus" styleClass="p-button-success" (click)="btnProduct()"></p-button>
+                    <p-button pRipple label="Delete" icon="pi pi-trash" styleClass="p-button-danger" (click)="deleteSelectedProduct()" [disabled]="selectedProducts?.length==0"></p-button>
+                </div>
+
+                <p-button label="" icon="pi pi-cog"></p-button>
+            </div>
+        </div>
+    </div>
+    <p-table #table [value]="products" [lazy]="true" dataKey="id" (onLazyLoad)="loadProducts($event)" [tableStyle]="{'min-width': '75rem'}"
+        [selection]="selectedProducts" (selectionChange)="onSelectionChange($event)" [selectAll]="selectAll" (selectAllChange)="onSelectAllChange($event)"
+        [paginator]="true" [rows]="10" [totalRecords]="totalRecords" [loading]="loading" [globalFilterFields]="['code','name']"
+        [showCurrentPageReport]="true"  currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+        [rowsPerPageOptions]="[10,25,50]">
+        <ng-template pTemplate="header">
+            <tr>
+                <th style="width: 4rem"><p-tableHeaderCheckbox></p-tableHeaderCheckbox></th>
+                <th pSortableColumn="code">Code <p-sortIcon field="code"></p-sortIcon></th>
+                <th pSortableColumn="name">Name <p-sortIcon field="name"></p-sortIcon></th>
+                <th >Actions</th>
+            </tr>
+            <tr>
+                <th style="width: 4rem">
+
+                </th>
+                <th>
+                    <p-columnFilter type="text" field="code" [showMenu]="false" [matchMode]="filterMatchMode" (click)="$event.stopPropagation()"></p-columnFilter>
+                </th>
+                <th>
+                    <p-columnFilter type="text" field="name" [showMenu]="false" [matchMode]="filterMatchMode" (click)="$event.stopPropagation()"></p-columnFilter>
+                </th>
+                <th>
+
+                </th>
+
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-product>
+            <tr>
+                <td>
+                    <p-tableCheckbox [value]="product"></p-tableCheckbox>
+                </td>
+                <td>{{product.code}}</td>
+                <td>{{product.name}}</td>
+                <td>
+                    <button pButton pRipple type="button" icon="pi pi-pencil" class="p-button-border-round p-button-text" (click)="btnProduct(product)"></button>
+                    <button pButton pRipple type="button" icon="pi pi-trash" class="p-button-border-round p-button-danger p-button-text" (click)="deleteProduct(product.id)"></button>
+                </td>
+            </tr>
+        </ng-template>
+
+    </p-table>
+    <p-dialog header="Title" [(visible)]="editProductDialog" [modal]="true" [closable]="false" [draggable]="false" styleClass="w-min" [resizable]="false">
+        <ng-template pTemplate="header">
+            <div *ngIf="!edit" class="text-2xl">New Product :</div>
+            <div *ngIf="edit" class="text-2xl">Edit Product :</div>
+        </ng-template>
+        <form [formGroup]="form" class="flex flex-column w-auto gap-4">
+                <div class="flex flex-row w-auto gap-4">
+
+                    <div class="field w-min">
+                        <label for="code" class="block">Code</label>
+                        <input id="code" formControlName="code" type="text"
+                                [ngClass]="{'ng-invalid ng-dirty': this.form.get('code').hasError('required') && this.form.get('code').touched}" pInputText/>
+                        <small id="code-help" class="p-error block" *ngIf="this.form.get('code').hasError('required') && this.form.get('code').touched">Code is required</small>
+                    </div>
+                    <div class="field w-min">
+                        <label for="name" class="block">Name</label>
+                        <input id="name" formControlName="name" type="text"
+                                [ngClass]="{'ng-invalid ng-dirty': this.form.get('name').hasError('required') && this.form.get('name').touched}" pInputText />
+                        <small id="code-help" class="p-error block" *ngIf="this.form.get('name').hasError('required') && this.form.get('name').touched">Name is required</small>
+                    </div>
+                </div>
+
+                <div class="flex flex-row w-auto gap-4">
+                    <div class="field w-min">
+                        <label for="description" class="block">Description</label>
+                        <input id="description" formControlName="description" type="text"
+                                [ngClass]="{'ng-invalid ng-dirty': this.form.get('description').hasError('required') && this.form.get('description').touched}" pInputText />
+                        <small id="code-help" class="p-error block" *ngIf="this.form.get('description').hasError('required') && this.form.get('description').touched">Description is required</small>
+                    </div>
+                    <div class="field w-min">
+                        <label for="price" class="block">Price</label>
+                        <input id="price" formControlName="price" type="number"
+                                [ngClass]="{'ng-invalid ng-dirty': this.form.get('price').hasError('required') && this.form.get('price').touched}" pInputText />
+                        <small id="code-help" class="p-error block" *ngIf="this.form.get('price').hasError('required') && this.form.get('price').touched">Price is required</small>
+                    </div>
+                </div>
+
+                <div class="flex flex-row w-auto gap-4">
+                    <div class="field w-min">
+                        <label for="quantity" class="block">Quantity</label>
+                        <input id="quantity" formControlName="quantity" type="number"
+                                [ngClass]="{'ng-invalid ng-dirty': this.form.get('quantity').hasError('required') && this.form.get('quantity').touched}" pInputText />
+                        <small id="code-help" class="p-error block" *ngIf="this.form.get('quantity').hasError('required') && this.form.get('quantity').touched">Quantity is required</small>
+                    </div>
+                    <div class="field w-min">
+                        <label for="category" class="block">Category</label>
+                        <input id="category" formControlName="category" type="text"
+                                [ngClass]="{'ng-invalid ng-dirty': this.form.get('category').hasError('required') && this.form.get('category').touched}" pInputText />
+                        <small id="code-help" class="p-error block" *ngIf="this.form.get('category').hasError('required') && this.form.get('category').touched">Category is required</small>
+                    </div>
+                </div>
+                    <div class="field w-auto">
+                        <label for="rating" class="block">Rating</label>
+                        <p-rating formControlName="rating" [readonly]="false" [cancel]="false"></p-rating>
+                        <small id="code-help" class="p-error block" *ngIf="this.form.get('rating').hasError('required') && this.form.get('rating').touched">Rating is required</small>
+                    </div>
+
+
+            <!--/div-->
+        </form>
+        <ng-template pTemplate="footer">
+            <p-button pRipple label="Cancel" icon="pi pi-times" styleClass="p-button-outlined p-button-danger" (click)="cancel()"></p-button>
+            <p-button *ngIf="!edit" [disabled]="form.invalid" pRipple label="Add" icon="pi pi-plus" styleClass="p-button-success" (click)="addProduct()"></p-button>
+            <p-button *ngIf="edit" [disabled]="form.invalid" pRipple label="Update" icon="pi pi-pencil" styleClass="p-button-success" (click)="addProduct()"></p-button>
+        </ng-template>
+    </p-dialog>
+    <p-confirmDialog [style]="{width: '50vw'}" [baseZIndex]="10000" rejectButtonStyleClass="p-button-text" [closable]="false"></p-confirmDialog>
+</div>

@@ -1,0 +1,63 @@
+<div id="products" class="app-frame p-4">
+    <div class="flex flex-row justify-content-center align-items-center ">
+        <div class="w-full md:w-6">
+            <p-dataView #dv [value]="products" [lazy]="true" dataKey="id" (onLazyLoad)="loadProducts($event)"
+            [paginator]="true" [rows]="10" [totalRecords]="totalRecords" [loading]="loading" [filterBy]="'name,description'"
+            [showCurrentPageReport]="true"  currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+            [rowsPerPageOptions]="[10,25,50]">
+                <ng-template pTemplate="header">
+                    <div class="flex flex-columnumn md:flex-row md:justify-content-between	 gap-4 w-full">
+                        <div class="flex flex-columnumn md:flex-row gap-4">
+                        <p-dropdown [options]="sortOptions" [(ngModel)]="sortKey" placeholder="Sort By Price" (onChange)="onSortChange($event)" styleClass="mb-2 md:mb-0"></p-dropdown>
+                        <span class="p-input-icon-left mb-2 md:mb-0">
+                            <i class="pi pi-search"></i>
+                            <input type="search" pInputText placeholder="Search by Name" (input)="applyFilterGlobal($event,dv)">
+                        </span>
+                        </div>
+                        <p-dataViewLayoutOptions></p-dataViewLayoutOptions>
+                    </div>
+                </ng-template>
+                <ng-template let-product pTemplate="listItem">
+                    <div class="col-12">
+                        <div class="product-list-item flex flex-row justify-content-between	">
+
+                            <div class="product-list-detail">
+                                <div class="product-name">{{product.name}}</div>
+                                <div class="product-description">{{product.description}}</div>
+                                <p-rating [ngModel]="product.rating" [readonly]="true" [cancel]="false"></p-rating>
+                                <i class="pi pi-tag product-category-icon"></i><span class="product-category">{{product.category}}</span>
+                            </div>
+                            <div class="product-list-action flex flex-column">
+                                <span class="product-price w-full text-right">${{product.price}}</span>
+                                <p-button icon="pi pi-shopping-cart" label="Add to Cart" [disabled]="product.inventoryStatus === 'OUTOFSTOCK'"></p-button>
+                                <span [class]="'product-badge status-' + product.inventoryStatus.toLowerCase()">{{product.inventoryStatus}}</span>
+                            </div>
+                        </div>
+                    </div>
+                </ng-template>
+                <ng-template let-product pTemplate="gridItem">
+                    <div class="col-12 md:col-4">
+                        <div class="product-grid-item gap-4 border-1 flex flex-column justify-content-center align-items-center m-4 p-4 border-round">
+                            <div class="product-grid-item-top">
+                                <div class="flex flex-column justify-content-center align-items-center">
+                                    <i class="pi pi-tag product-category-icon"></i>
+                                    <span class="product-category">{{product.category}}</span>
+                                </div>
+                                <span [class]="'product-badge status-' + product.inventoryStatus.toLowerCase()">{{product.inventoryStatus}}</span>
+                            </div>
+                            <div class="product-grid-item-content flex flex-column justify-content-center align-items-center">
+                                <div class="product-name">{{product.name}}</div>
+                                <div class="product-description">{{product.description}}</div>
+                                <p-rating [ngModel]="product.rating" [readonly]="true" [cancel]="false"></p-rating>
+                            </div>
+                            <div class="product-grid-item-bottom flex flex-row justify-content-center align-items-center gap-4">
+                                <span class="product-price">${{product.price}}</span>
+                                <p-button icon="pi pi-shopping-cart" [disabled]="product.inventoryStatus === 'OUTOFSTOCK'"></p-button>
+                            </div>
+                        </div>
+                    </div>
+                </ng-template>
+            </p-dataView>
+        </div>
+    </div>
+</div>
