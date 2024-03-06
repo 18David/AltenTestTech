@@ -84,56 +84,15 @@ export class AdminProductsComponent implements OnInit, OnDestroy
         sortField: event?.sortField,
         sortOrder: event?.sortOrder,
         filters: JSON.stringify(event?.filters)
-        // Add other filter parameters as needed
       };
 
       this.productsService.getProducts(params).pipe(takeUntil(this.unsubcribeAll)).subscribe(res => {
         console.log('res', res);
-        this.products = res.data; /*this.filter(res.data,event.filters);
-        this.products = this.sortBy(this.products, event.sortField, event.sortOrder);*/
+        this.products = res.data;
         this.totalRecords = res.totalRecords??this.products.length;
         this.loading = false;
       });
-        //this.loading = true;
 
-    }
-
-    sortBy(data: Product[], field: string, order: number): Product[] {
-      console.log('field', field);
-      console.log('order', order);
-      if(field === undefined || field === null) {
-        return data;
-      }
-      return data.sort((data1, data2) => {
-        let value1 = data1[field];
-        let value2 = data2[field];
-        let result = null;
-
-        if (value1 == null && value2 != null) result = -1;
-        else if (value1 != null && value2 == null) result = 1;
-        else if (value1 == null && value2 == null) result = 0;
-        else if (typeof value1 === 'string' && typeof value2 === 'string')
-          result = (order>0)?value1.localeCompare(value2):value2.localeCompare(value1);
-        else result = value1 < value2 ? -1 * order : value1 > value2 ? 1 * order : 0;
-
-        return result;
-      });
-    }
-
-    filter(data: Product[], filters: { [s: string]: FilterMetadata; }): Product[] {
-      console.log('filters', filters);
-      if (!filters) {
-        return data;
-      }
-      let filteredData: Product[] = data;
-      for (let field in filters) {
-        if (filters[field].value !== undefined && filters[field].value !== null) {
-          filteredData = filteredData.filter((item: Product) => {
-            return item[field].toLowerCase().includes(filters[field].value.toLowerCase());
-          });
-        }
-      }
-      return filteredData;
     }
 
     onSelectionChange(value = []) {
